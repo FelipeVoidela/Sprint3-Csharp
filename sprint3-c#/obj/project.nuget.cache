@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "dgSpecHash": "yyx5MnixwS8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\felip\\Desktop\\sprint3-c#\\sprint3-c#\\sprint3-c#.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\felip\\.nuget\\packages\\dapper\\2.1.1\\dapper.2.1.1.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.configuration\\8.0.0\\microsoft.extensions.configuration.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\8.0.0\\microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.configuration.fileextensions\\8.0.0\\microsoft.extensions.configuration.fileextensions.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.configuration.json\\8.0.0\\microsoft.extensions.configuration.json.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\8.0.0\\microsoft.extensions.fileproviders.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.fileproviders.physical\\8.0.0\\microsoft.extensions.fileproviders.physical.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.filesystemglobbing\\8.0.0\\microsoft.extensions.filesystemglobbing.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\6.0.0\\microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\npgsql\\7.0.6\\npgsql.7.0.6.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\system.text.encodings.web\\8.0.0\\system.text.encodings.web.8.0.0.nupkg.sha512",
+    "C:\\Users\\felip\\.nuget\\packages\\system.text.json\\8.0.0\\system.text.json.8.0.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "message": "sprint3-c# depende de Dapper (>= 2.1.0) mas Dapper 2.1.0 não foi encontrado. Dapper 2.1.1 foi resolvido.",
+      "projectPath": "C:\\Users\\felip\\Desktop\\sprint3-c#\\sprint3-c#\\sprint3-c#.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\felip\\Desktop\\sprint3-c#\\sprint3-c#\\sprint3-c#.csproj",
+      "libraryId": "Dapper",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "message": "sprint3-c# depende de Npgsql (>= 7.0.5) mas Npgsql 7.0.5 não foi encontrado. Npgsql 7.0.6 foi resolvido.",
+      "projectPath": "C:\\Users\\felip\\Desktop\\sprint3-c#\\sprint3-c#\\sprint3-c#.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\felip\\Desktop\\sprint3-c#\\sprint3-c#\\sprint3-c#.csproj",
+      "libraryId": "Npgsql",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "O pacote 'Npgsql' 7.0.6 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-x9vc-6hfv-hg8c",
+      "projectPath": "C:\\Users\\felip\\Desktop\\sprint3-c#\\sprint3-c#\\sprint3-c#.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\felip\\Desktop\\sprint3-c#\\sprint3-c#\\sprint3-c#.csproj",
+      "libraryId": "Npgsql",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
+}

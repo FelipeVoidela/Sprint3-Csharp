@@ -1,0 +1,264 @@
+﻿using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
+using Dapper;
+
+// Simple console menu for User and Institution management
+// Uses PostgreSQL with Dapper for CRUD and JSON/txt file import-export.
+
+var config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+var connString = config.GetConnectionString("Default") ?? "Host=localhost;Username=postgres;Password=postgres;Database=sprint3_db";
+
+using var repo = new Repository(connString);
+await repo.InitializeAsync();
+
+Console.WriteLine("SISTEMA - Usuários e Instituições");
+
+while (true)
+{
+    Console.WriteLine();
+    Console.WriteLine("1 - Gerenciar Usuários");
+    Console.WriteLine("2 - Gerenciar Instituições");
+    Console.WriteLine("3 - Importar/Exportar (json/txt)");
+    Console.WriteLine("0 - Sair");
+    Console.Write("Escolha: ");
+    var opt = Console.ReadLine();
+    if (opt == "0") break;
+    if (opt == "1") await ManageUsers(repo);
+    if (opt == "2") await ManageInstitutions(repo);
+    if (opt == "3") await ImportExport(repo);
+}
+
+// ----- Menus -----
+
+static async Task ManageUsers(Repository repo)
+{
+    while (true)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Usuarios: 1-Listar 2-Criar 3-Editar 4-Deletar 0-Voltar");
+        Console.Write("Escolha: ");
+        var o = Console.ReadLine();
+        if (o == "0") return;
+        if (o == "1")
+        {
+            var items = await repo.GetUsersAsync();
+            foreach (var u in items)
+                Console.WriteLine(u);
+        }
+        else if (o == "2")
+        {
+            var u = new User();
+            Console.Write("Nome: "); u.Name = Console.ReadLine() ?? "";
+            Console.Write("Email: "); u.Email = Console.ReadLine() ?? "";
+            Console.Write("InstituicaoId (opcional): ");
+            var s = Console.ReadLine();
+            u.InstitutionId = string.IsNullOrWhiteSpace(s) ? null : int.Parse(s);
+            await repo.CreateUserAsync(u);
+            Console.WriteLine("Criado.");
+        }
+        else if (o == "3")
+        {
+            Console.Write("Id: "); var id = int.Parse(Console.ReadLine() ?? "0");
+            var u = await repo.GetUserAsync(id);
+            if (u == null) { Console.WriteLine("Não encontrado"); continue; }
+            Console.Write($"Nome ({u.Name}): "); var n = Console.ReadLine(); if (!string.IsNullOrWhiteSpace(n)) u.Name = n;
+            Console.Write($"Email ({u.Email}): "); var e = Console.ReadLine(); if (!string.IsNullOrWhiteSpace(e)) u.Email = e;
+            Console.Write($"InstituicaoId ({u.InstitutionId}): "); var ii = Console.ReadLine(); if (!string.IsNullOrWhiteSpace(ii)) u.InstitutionId = int.Parse(ii);
+            await repo.UpdateUserAsync(u);
+            Console.WriteLine("Atualizado.");
+        }
+        else if (o == "4")
+        {
+            Console.Write("Id: "); var id = int.Parse(Console.ReadLine() ?? "0");
+            await repo.DeleteUserAsync(id);
+            Console.WriteLine("Deletado.");
+        }
+    }
+}
+
+static async Task ManageInstitutions(Repository repo)
+{
+    while (true)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Instituicoes: 1-Listar 2-Criar 3-Editar 4-Deletar 0-Voltar");
+        Console.Write("Escolha: ");
+        var o = Console.ReadLine();
+        if (o == "0") return;
+        if (o == "1")
+        {
+            var items = await repo.GetInstitutionsAsync();
+            foreach (var u in items)
+                Console.WriteLine(u);
+        }
+        else if (o == "2")
+        {
+            var i = new Institution();
+            Console.Write("Nome: "); i.Name = Console.ReadLine() ?? "";
+            Console.Write("Endereco: "); i.Address = Console.ReadLine() ?? "";
+            await repo.CreateInstitutionAsync(i);
+            Console.WriteLine("Criado.");
+        }
+        else if (o == "3")
+        {
+            Console.Write("Id: "); var id = int.Parse(Console.ReadLine() ?? "0");
+            var i = await repo.GetInstitutionAsync(id);
+            if (i == null) { Console.WriteLine("Não encontrado"); continue; }
+            Console.Write($"Nome ({i.Name}): "); var n = Console.ReadLine(); if (!string.IsNullOrWhiteSpace(n)) i.Name = n;
+            Console.Write($"Endereco ({i.Address}): "); var a = Console.ReadLine(); if (!string.IsNullOrWhiteSpace(a)) i.Address = a;
+            await repo.UpdateInstitutionAsync(i);
+            Console.WriteLine("Atualizado.");
+        }
+        else if (o == "4")
+        {
+            Console.Write("Id: "); var id = int.Parse(Console.ReadLine() ?? "0");
+            await repo.DeleteInstitutionAsync(id);
+            Console.WriteLine("Deletado.");
+        }
+    }
+}
+
+static async Task ImportExport(Repository repo)
+{
+    Console.WriteLine("1 - Exportar JSON (usuarios + instituicoes)");
+    Console.WriteLine("2 - Importar JSON");
+    Console.WriteLine("3 - Exportar TXT");
+    Console.WriteLine("4 - Importar TXT");
+    Console.Write("Escolha: ");
+    var o = Console.ReadLine();
+    if (o == "1")
+    {
+        var data = new { users = await repo.GetUsersAsync(), institutions = await repo.GetInstitutionsAsync() };
+        var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+        await File.WriteAllTextAsync("export.json", json);
+        Console.WriteLine("export.json salvo.");
+    }
+    else if (o == "2")
+    {
+        var j = await File.ReadAllTextAsync("export.json");
+        var doc = JsonSerializer.Deserialize<JsonDocument>(j);
+        if (doc == null) return;
+        if (doc.RootElement.TryGetProperty("institutions", out var insts))
+        {
+            foreach (var el in insts.EnumerateArray())
+            {
+                var inst = JsonSerializer.Deserialize<Institution>(el.GetRawText());
+                if (inst != null) await repo.CreateInstitutionAsync(inst);
+            }
+        }
+        if (doc.RootElement.TryGetProperty("users", out var usrs))
+        {
+            foreach (var el in usrs.EnumerateArray())
+            {
+                var u = JsonSerializer.Deserialize<User>(el.GetRawText());
+                if (u != null) await repo.CreateUserAsync(u);
+            }
+        }
+        Console.WriteLine("Importado.");
+    }
+    else if (o == "3")
+    {
+        var users = await repo.GetUsersAsync();
+        var insts = await repo.GetInstitutionsAsync();
+        using var sw = new StreamWriter("export.txt");
+        sw.WriteLine("Institutions:");
+        foreach (var i in insts) sw.WriteLine(i);
+        sw.WriteLine("Users:");
+        foreach (var u in users) sw.WriteLine(u);
+        Console.WriteLine("export.txt salvo.");
+    }
+    else if (o == "4")
+    {
+        var lines = await File.ReadAllLinesAsync("export.txt");
+        // naive parsing example - expect lines with Id|Name|Address for institutions then Users
+        foreach (var l in lines)
+        {
+            var parts = l.Split('|');
+            if (parts.Length == 3 && parts[0] != "Institutions:" && parts[0] != "Users:")
+            {
+                if (lines[0].StartsWith("Institutions"))
+                {
+                    var inst = new Institution { Name = parts[1], Address = parts[2] };
+                    await repo.CreateInstitutionAsync(inst);
+                }
+            }
+        }
+        Console.WriteLine("Importado TXT (simples)");
+    }
+}
+
+// ----- Models -----
+
+public record User
+{
+    public int Id { get; init; }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public int? InstitutionId { get; set; }
+    public override string ToString() => $"User {{Id={Id}, Name={Name}, Email={Email}, InstitutionId={InstitutionId}}}";
+}
+
+public record Institution
+{
+    public int Id { get; init; }
+    public string Name { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
+    public override string ToString() => $"Institution {{Id={Id}, Name={Name}, Address={Address}}}";
+}
+
+// ----- Repository -----
+
+public class Repository : IDisposable
+{
+    private readonly string _conn;
+    private readonly NpgsqlConnection _connection;
+    public Repository(string conn) { _conn = conn; _connection = new NpgsqlConnection(_conn); }
+
+    public async Task InitializeAsync()
+    {
+        await _connection.OpenAsync();
+        // create tables if not exists
+        var sqlInst = @"CREATE TABLE IF NOT EXISTS institutions (
+            id serial PRIMARY KEY,
+            name text NOT NULL,
+            address text NOT NULL
+        );";
+        var sqlUser = @"CREATE TABLE IF NOT EXISTS users (
+            id serial PRIMARY KEY,
+            name text NOT NULL,
+            email text NOT NULL,
+            institutionid integer REFERENCES institutions(id)
+        );";
+        await _connection.ExecuteAsync(sqlInst);
+        await _connection.ExecuteAsync(sqlUser);
+    }
+
+    public async Task<IEnumerable<User>> GetUsersAsync()
+        => await _connection.QueryAsync<User>("select id as Id, name as Name, email as Email, institutionid as InstitutionId from users order by id");
+    public async Task<User?> GetUserAsync(int id)
+        => await _connection.QuerySingleOrDefaultAsync<User>("select id as Id, name as Name, email as Email, institutionid as InstitutionId from users where id = @id", new { id });
+    public async Task CreateUserAsync(User u)
+        => await _connection.ExecuteAsync("insert into users(name,email,institutionid) values(@Name,@Email,@InstitutionId)", u);
+    public async Task UpdateUserAsync(User u)
+        => await _connection.ExecuteAsync("update users set name=@Name,email=@Email,institutionid=@InstitutionId where id=@Id", u);
+    public async Task DeleteUserAsync(int id)
+        => await _connection.ExecuteAsync("delete from users where id=@id", new { id });
+
+    public async Task<IEnumerable<Institution>> GetInstitutionsAsync()
+        => await _connection.QueryAsync<Institution>("select id as Id, name as Name, address as Address from institutions order by id");
+    public async Task<Institution?> GetInstitutionAsync(int id)
+        => await _connection.QuerySingleOrDefaultAsync<Institution>("select id as Id, name as Name, address as Address from institutions where id = @id", new { id });
+    public async Task CreateInstitutionAsync(Institution i)
+        => await _connection.ExecuteAsync("insert into institutions(name,address) values(@Name,@Address)", i);
+    public async Task UpdateInstitutionAsync(Institution i)
+        => await _connection.ExecuteAsync("update institutions set name=@Name,address=@Address where id=@Id", i);
+    public async Task DeleteInstitutionAsync(int id)
+        => await _connection.ExecuteAsync("delete from institutions where id=@id", new { id });
+
+    public void Dispose() { _connection?.Dispose(); }
+}

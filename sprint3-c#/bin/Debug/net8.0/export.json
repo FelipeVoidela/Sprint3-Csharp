@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "Id": 1,
+      "Name": "Felipe Voidela",
+      "Email": "felipevoidela@gmail.com",
+      "InstitutionId": 1
+    },
+    {
+      "Id": 2,
+      "Name": "Felipe Voidela",
+      "Email": "felipevoidela@gmail.com",
+      "InstitutionId": 1
+    },
+    {
+      "Id": 3,
+      "Name": "Douglas",
+      "Email": "douglas@gmail.com",
+      "InstitutionId": 1
+    }
+  ],
+  "institutions": [
+    {
+      "Id": 1,
+      "Name": "Fiap",
+      "Address": "Aclimacao"
+    },
+    {
+      "Id": 2,
+      "Name": "Fiape",
+      "Address": "Sao paulo"
+    },
+    {
+      "Id": 3,
+      "Name": "Fiapo",
+      "Address": "Paulista"
+    }
+  ]
+}

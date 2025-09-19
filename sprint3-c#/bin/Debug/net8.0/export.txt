@@ -1,0 +1,8 @@
+Institutions:
+Institution {Id=1, Name=Fiap, Address=Aclimacao}
+Institution {Id=2, Name=Fiape, Address=Sao paulo}
+Institution {Id=3, Name=Fiapo, Address=Paulista}
+Users:
+User {Id=1, Name=Felipe Voidela, Email=felipevoidela@gmail.com, InstitutionId=1}
+User {Id=2, Name=Felipe Voidela, Email=felipevoidela@gmail.com, InstitutionId=1}
+User {Id=3, Name=Douglas, Email=douglas@gmail.com, InstitutionId=1}
