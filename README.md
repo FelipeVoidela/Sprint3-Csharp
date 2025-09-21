@@ -13,8 +13,6 @@ Ricardo Augusto de Matos Filho - 95906
 
 # Documentação do Sistema — Usuários e Instituições
 
-**Arquivo:** `Documentacao_Sistema_Usuarios_Instituicoes.md`
-
 ---
 
 ## Visão Geral
@@ -26,24 +24,7 @@ Aplicação console em C# que gerencia Usuários e Instituições com persistên
 * Importação/Exportação em JSON e TXT
 * Arquitetura simples baseada em um repositório (`Repository`) que encapsula acesso ao banco
 
-O programa é destinado a fins de estudo/portfólio: foco em organização de camadas e operações I/O.
-
----
-
-## Estrutura de Pastas (sugerida)
-
-```
-/src
-  /App (Program.cs)
-  /Data (AppDbContext.cs ou Repository.cs)
-  /Models (User.cs, Institution.cs)
-  /Migrations (se usar EF)
-  /Utils (JsonHelper.cs, FileHelper.cs)
-/tests
-  /UnitTests
-/docs
-  Documentacao_Sistema_Usuarios_Instituicoes.md
-```
+O programa é destinado a fins de estudo/portfólio
 
 ---
 
@@ -89,7 +70,7 @@ O programa é destinado a fins de estudo/portfólio: foco em organização de ca
 
 O `Repository` encapsula todas as operações de DB e expõe métodos assíncronos:
 
-* Inicialização: `InitializeAsync()` (criar tabelas se necessário)
+* Inicialização: `InitializeAsync()` 
 * Usuários: `GetUsersAsync()`, `GetUserAsync(id)`, `CreateUserAsync(user)`, `UpdateUserAsync(user)`, `DeleteUserAsync(id)`
 * Instituições: `GetInstitutionsAsync()`, `GetInstitutionAsync(id)`, `CreateInstitutionAsync(inst)`, `UpdateInstitutionAsync(inst)`, `DeleteInstitutionAsync(id)`
 
@@ -113,7 +94,7 @@ O `Repository` encapsula todas as operações de DB e expõe métodos assíncron
 * **Importar TXT**: parseia linhas e cria entidades de acordo com a seção atual.
 
 
-## Banco de Dados — Esquema SQL sugerido
+## Banco de Dados — Esquema SQL 
 
 ```sql
 CREATE TABLE institutions (
