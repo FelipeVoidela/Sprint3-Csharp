@@ -82,7 +82,6 @@ O programa é destinado a fins de estudo/portfólio: foco em organização de ca
 * `string Name`
 * `string Address`
 
-> Observação: considere adicionar validações (ex.: email válido), atributos de data (`CreatedAt`, `UpdatedAt`) e unique constraint em `Email`.
 
 ---
 
@@ -94,13 +93,6 @@ O `Repository` encapsula todas as operações de DB e expõe métodos assíncron
 * Usuários: `GetUsersAsync()`, `GetUserAsync(id)`, `CreateUserAsync(user)`, `UpdateUserAsync(user)`, `DeleteUserAsync(id)`
 * Instituições: `GetInstitutionsAsync()`, `GetInstitutionAsync(id)`, `CreateInstitutionAsync(inst)`, `UpdateInstitutionAsync(inst)`, `DeleteInstitutionAsync(id)`
 
-**Boas práticas sugeridas:**
-
-* Tratar transações ao inserir múltiplas entidades (ex: import JSON com instituições + usuários) para evitar estado parcial.
-* Log de erros/queries (usar `ILogger`).
-* Parâmetros em queries para evitar SQL Injection.
-
----
 
 ## Fluxo da Aplicação (Program.cs)
 
@@ -120,13 +112,6 @@ O `Repository` encapsula todas as operações de DB e expõe métodos assíncron
 * **Exportar TXT**: salva um arquivo `export.txt` com seções `Institutions:` e `Users:` e linhas separadas por pipe (`|`).
 * **Importar TXT**: parseia linhas e cria entidades de acordo com a seção atual.
 
-**Melhorias sugeridas:**
-
-* Validar duplicatas antes de inserir (evitar inserir várias vezes da mesma importação).
-* Usar transação para rollback em caso de erro.
-* Suportar flags de sobrescrever/ignorar ou mapeamento por `Id`.
-
----
 
 ## Banco de Dados — Esquema SQL sugerido
 
